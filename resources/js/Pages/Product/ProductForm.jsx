@@ -29,7 +29,7 @@ export default function ProductForm(props){
         stock: props.form.stock,
         price: props.form.price,
         description: props.form.description,
-        image: null,
+        image: props.form.image,
         is_active: props.form.is_active,
     });
 
@@ -78,7 +78,6 @@ export default function ProductForm(props){
                                         }
                                         type="text"
                                         className="mt-1 block w-full"
-                                        autoComplete="current-password"
                                     />
 
                                     <InputError
@@ -100,7 +99,6 @@ export default function ProductForm(props){
                                         }
                                         type="text"
                                         className="mt-1 block w-full"
-                                        autoComplete="current-password"
                                     />
 
                                     <InputError
@@ -186,22 +184,24 @@ export default function ProductForm(props){
 
                             <div className="max-w-xl">
                                 <InputLabel
-                                    value="Image"
+                                    value="Image URL"
                                 />
 
-                                <div className="flex items-center justify-between">
-                                    <input name="image"
-                                           onChange={(e) =>
-                                               setData("image", e.target.files[0])
-                                           }
-                                           accept="image/png, image/jpeg"
-                                           className="mt-4 text-sm text-grey-500 file:mr-5 file:py-3 file:px-10 file:rounded-full file:border-0 file:text-md file:font-semibold  file:text-white file:bg-gradient-to-r file:from-indigo-600 file:to-amber-600 hover:file:cursor-pointer hover:file:opacity-80"
-                                           type="file"/>
+                                <div className="flex items-center justify-between gap-4">
+                                    <TextInput
+                                        name="image"
+                                        value={data.image}
+                                        onChange={(e) =>
+                                            setData('image', e.target.value)
+                                        }
+                                        type="text"
+                                        className="mt-1 block w-full"
+                                    />
 
                                     {
                                         props.form.image && <img
                                             alt={props.form.name}
-                                            className="h-20"
+                                            className="h-12"
                                             src={props.form.image}/>
                                     }
                                 </div>
@@ -222,7 +222,7 @@ export default function ProductForm(props){
                                     rows={3}
                                     value={data.description}
                                     onChange={(event) => setData('description', event.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg sm:text-right"/>
+                                    className="w-full border border-gray-300 rounded-lg"/>
 
                                 <InputError
                                     message={errors.description}

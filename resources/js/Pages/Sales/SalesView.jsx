@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import {useEffect} from "react";
 
-export default function ProductView(props){
+export default function SalesView(props){
 
     useEffect(() => {
         notify()
@@ -45,7 +45,7 @@ export default function ProductView(props){
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete(route('product.delete', id));
+                router.delete(route('sales.delete', id));
             }
         });
     }
@@ -54,18 +54,18 @@ export default function ProductView(props){
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Product
+                    Sales
                 </h2>
             }>
-            <Head title="Product" />
+            <Head title="Sales" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="border-b border-slate-100">
                             <div className="p-6 text-gray-900 flex items-center justify-between">
-                                <h4 className="text-lg font-semibold">Data Product</h4>
-                                <LinkPrimary href={route('product.add')}>Add New</LinkPrimary>
+                                <h4 className="text-lg font-semibold">Data Sales</h4>
+                                <LinkPrimary href={route('sales.add')}>Add New</LinkPrimary>
                             </div>
                         </div>
                         <div className="p-6 text-gray-900 w-full">
@@ -76,13 +76,7 @@ export default function ProductView(props){
                                         className="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">
-                                            Product Code
-                                        </th>
-                                        <th scope="col" className="px-6 py-3">
-                                            Product Name
-                                        </th>
-                                        <th scope="col" className="px-6 py-3">
-                                            Category
+                                            Category name
                                         </th>
                                         <th scope="col" className="px-6 py-3">
                                             Status
@@ -95,7 +89,7 @@ export default function ProductView(props){
                                     <tbody>
                                     {
                                         props.data.length === 0 ? <tr className="bg-white border-b border-gray-200">
-                                            <th colSpan={5}
+                                            <th colSpan={3}
                                                 className="text-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                                 No Items
                                             </th>
@@ -105,21 +99,7 @@ export default function ProductView(props){
                                                 <tr key={index} className="bg-white border-b border-gray-200">
                                                     <th
                                                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                        <div className="flex items-center gap-1">
-                                                            {
-                                                                item.image ? <img className="h-8 w-8 rounded-lg"
-                                                                                  src={item.image} alt={item.kode} /> : <div className="w-8 h-8 rounded-lg text-white uppercase bg-accent flex items-center justify-center">{item.name.substring(0, 1)}</div>
-                                                            }
-                                                            {item.code}
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                                         {item.name}
-                                                    </th>
-                                                    <th
-                                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                        {item.category.name}
                                                     </th>
                                                     <th
                                                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
@@ -130,7 +110,7 @@ export default function ProductView(props){
                                                     </th>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center gap-1 justify-end">
-                                                            <LinkSecondary href={route('product.edit', item.id)} data-tooltip-id="my-tooltip" data-tooltip-content="Edit Data"><RiEdit2Line/></LinkSecondary>
+                                                            <LinkSecondary href={route('sales.edit', item.id)} data-tooltip-id="my-tooltip" data-tooltip-content="Edit Data"><RiEdit2Line/></LinkSecondary>
                                                             <PrimaryButton onClick={() => handleDelete(item.id)} type="button" data-tooltip-id="my-tooltip" data-tooltip-content="Delete Data"><BiTrash/></PrimaryButton>
                                                         </div>
                                                     </td>

@@ -5,6 +5,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -59,6 +60,16 @@ Route::middleware(['auth', 'verified'])->group(function (){
         Route::post('/', [ProductController::class, 'store'])->name('store');
         Route::post('/{id}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{id}', [ProductController::class, 'delete'])->name('delete');
+    });
+
+    Route::prefix('/sales')->name('sales.')->group(function (){
+        Route::get('/', [SalesController::class, 'index'])->name('index');
+        Route::get('/add', [SalesController::class, 'form'])->name('add');
+        Route::get('/products/{id}', [SalesController::class, 'products'])->name('products');
+        Route::get('/{id}/edit', [SalesController::class, 'form'])->name('edit');
+        Route::post('/', [SalesController::class, 'store'])->name('store');
+        Route::post('/{id}', [SalesController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SalesController::class, 'delete'])->name('delete');
     });
 
     Route::get('/image/{filename}', [ImageController::class, 'index'])->name('image');

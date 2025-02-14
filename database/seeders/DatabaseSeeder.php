@@ -31,5 +31,7 @@ class DatabaseSeeder extends Seeder
         $user->name     = 'Admin';
         $user->email_verified_at = now();
         $user->save();
+
+        $this->call(ProductSeeder::class);
     }
 }

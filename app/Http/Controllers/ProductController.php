@@ -49,7 +49,7 @@ class ProductController extends Controller {
             $form['stock']      = (float) $search->stock;
             $form['price']      = (float) $search->price;
             $form['description']= $search->description ?? '';
-            $form['image']      = $search->image ? route('image', $search->image) : null;
+            $form['image']      = $search->image;
             $form['is_active']  = $search->is_active;
         }
 
@@ -69,14 +69,9 @@ class ProductController extends Controller {
             'stock' => ['required', 'numeric'],
             'price' => ['required', 'numeric'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', File::types(['png', 'jpg', 'jpeg'])->max( 1024),],
+            'image' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
         ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')){
-            $imagePath = ImageUpload::store($request->file('image'));
-        }
 
         $body = [
             'code'          => $param['code'],
@@ -86,7 +81,7 @@ class ProductController extends Controller {
             'stock'         => $param['stock'],
             'price'         => $param['price'],
             'description'   => $param['description'],
-            'image'         => $imagePath,
+            'image'         => $param['image'],
             'is_active'     => $param['is_active'],
         ];
 
@@ -107,14 +102,9 @@ class ProductController extends Controller {
             'stock' => ['required', 'numeric'],
             'price' => ['required', 'numeric'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', File::types(['png', 'jpg', 'jpeg'])->max( 1024),],
+            'image' => ['nullable', 'string',],
             'is_active' => ['required', 'boolean'],
         ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')){
-            $imagePath = ImageUpload::store($request->file('image'));
-        }
 
         $body = [
             'code'          => $param['code'],
@@ -125,11 +115,8 @@ class ProductController extends Controller {
             'price'         => $param['price'],
             'description'   => $param['description'],
             'is_active'     => $param['is_active'],
+            'image'         => $param['image'],
         ];
-
-        if ($imagePath){
-            $body['image']  = $imagePath;
-        }
 
         $this->service->update($body, $id);
 
