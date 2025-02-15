@@ -1,11 +1,14 @@
-import {Head, useForm} from "@inertiajs/react";
-import {useState} from "react";
+import {Head, Link, useForm} from "@inertiajs/react";
+import { useState} from "react";
 import {NumericFormat} from "react-number-format";
 import {formatThousands} from "@/Helper/Utils.js";
-import {RiAddBoxFill, RiDeleteBinFill, RiIndeterminateCircleFill} from "react-icons/ri";
+import {RiAddBoxFill, RiArrowGoBackFill, RiDeleteBinFill, RiIndeterminateCircleFill} from "react-icons/ri";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import Modal from "@/Components/Modal.jsx";
+import InputLabel from "@/Components/InputLabel.jsx";
+import InputError from "@/Components/InputError.jsx";
+import Swal from "sweetalert2";
 
 export default function SalesCashier(props){
     const [categoryIndexSelected, setCategoryIndexSelected] = useState(props.category_selected)
@@ -21,12 +24,12 @@ export default function SalesCashier(props){
         processing,
         recentlySuccessful,
     } = useForm({
-        code: '',
         payment_method: null,
         subtotal: 0,
         disc_percent: 0,
         disc_amount: 0,
         total: 0,
+        cash: 0,
         items: [],
     });
 
@@ -110,7 +113,48 @@ export default function SalesCashier(props){
     }
 
     const onProcessPayment = () => {
+        const newData = {
+            total: data.subtotal,
+            cash: data.subtotal,
+        }
+        setData({...data, ...newData})
+
         setModalPayment(true)
+    }
+
+    const onClickPaymentMethod = (index) => {
+        const newData = {
+            payment_method: props.payments[index],
+        }
+
+        setData({...data, ...newData})
+    }
+
+    const onSubmit = (e) => {
+        e.preventDefault()
+
+        post(route('sales.store'), {
+            onSuccess: () => {
+                const newData = {
+                    payment_method: null,
+                    subtotal: 0,
+                    disc_percent: 0,
+                    disc_amount: 0,
+                    total: 0,
+                    cash: 0,
+                    items: [],
+                }
+
+                setData({...data, ...newData})
+                setModalPayment(false)
+
+                Swal.fire({
+                    title: "Successfully!",
+                    text: "Sales Saved!",
+                    icon: "success"
+                });
+            }
+        })
     }
 
     return (
@@ -121,6 +165,9 @@ export default function SalesCashier(props){
                 <div className="flex-grow flex flex-col h-full overflow-y-auto">
                     <div className="select-none overflow-x-auto">
                         <div className="flex items-center gap-2 px-4 py-2">
+                            <Link href={route('sales.index')} className="border border-gray-200 rounded-lg px-4 py-2 text-accent hover:bg-accent/10">
+                                <RiArrowGoBackFill/>
+                            </Link>
                             {
                                 props.categories.map((item, index) => (
                                     <button key={index} onClick={() => onClickCategory(index)}
@@ -161,32 +208,46 @@ export default function SalesCashier(props){
                         </div>
                     </div>
 
-                    <div className="p-2 flex-1 h-full w-full flex flex-col items-start justify-start overflow-auto">
+                    <div className="p-2 flex-1 h-full w-full ">
                         {
-                            data.items.map((item, index) => (
-                                <div key={index} className="w-full flex items-center justify-between gap-2 mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <img alt={item.product.code} src={item.product.image} className="h-12 w-12 rounded-lg"/>
-                                        <div>
-                                            <p className="text-sm font-semibold">#{item.product.code} {item.product.name}</p>
-                                            <p className="text-sm">{item.qty} x {formatThousands(item.price)} = {formatThousands(item.subtotal)}</p>
+                            data.items.length === 0 ? <div className="w-full p-4 opacity-25 select-none flex flex-col flex-wrap content-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 inline-block" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <p>
+                                    CART EMPTY
+                                </p>
+                            </div> : <div className="w-full flex flex-col items-start justify-start overflow-auto">
+                                {
+                                    data.items.map((item, index) => (
+                                        <div key={index}
+                                             className="w-full flex items-center justify-between gap-2 mb-4">
+                                            <div className="flex items-center gap-2">
+                                            <img alt={item.product.code} src={item.product.image} className="h-12 w-12 rounded-lg"/>
+                                                <div>
+                                                    <p className="text-sm font-semibold">#{item.product.code} {item.product.name}</p>
+                                                    <p className="text-sm">{item.qty} x {formatThousands(item.price)} = {formatThousands(item.subtotal)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button type="button" onClick={() => onItemMinusClick(index)}
+                                                        className="border px-1 py-1 rounded-lg hover:bg-gray-100">{
+                                                    item.qty === 1 ? <RiDeleteBinFill className="text-lg text-red-600"/> : <RiIndeterminateCircleFill className="text-lg text-red-600"/>
+                                                }</button>
+                                                <p className="text-lg font-semibold">{item.qty}</p>
+                                                <button type="button" onClick={() => onItemPlusClick(index)}
+                                                        className="border px-1 py-1 rounded-lg hover:bg-gray-100"><RiAddBoxFill className="text-lg text-green-600"/></button>
+                                            </div>
                                         </div>
+                                    ))
+                                }
+                                {
+                                    data.items.length > 0 && <div className="w-full">
+                                        <SecondaryButton onClick={() => onClearItems()} className="w-full justify-center">Clear</SecondaryButton>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button type="button" onClick={() => onItemMinusClick(index)}
-                                                className="border px-1 py-1 rounded-lg hover:bg-gray-100">{
-                                            item.qty === 1 ? <RiDeleteBinFill className="text-lg text-red-600"/> : <RiIndeterminateCircleFill className="text-lg text-red-600"/>
-                                        }</button>
-                                        <p className="text-lg font-semibold">{item.qty}</p>
-                                        <button type="button" onClick={() => onItemPlusClick(index)}
-                                                className="border px-1 py-1 rounded-lg hover:bg-gray-100"><RiAddBoxFill className="text-lg text-green-600"/></button>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                        {
-                            data.items.length > 0 && <div className="w-full">
-                                <SecondaryButton onClick={() => onClearItems()} className="w-full justify-center">Clear</SecondaryButton>
+                                }
                             </div>
                         }
                     </div>
@@ -201,7 +262,48 @@ export default function SalesCashier(props){
 
             <Modal show={modalPayment} onClose={() => setModalPayment(!modalPayment)}>
                 <div className="bg-white sm:p-8">
+                    <form onSubmit={onSubmit}>
+                        <div>
+                            <InputLabel
+                                value="Payment Method"/>
 
+                            <div className="mt-4 grid grid-cols-3 gap-2">
+                                {
+                                    props.payments.map((item, index) => (
+                                        <button key={index} onClick={() => onClickPaymentMethod(index)} type="button"
+                                            className={`border ${item.id === data.payment_method?.id ? 'bg-accent text-white hover:bg-accent/80' : 'bg-transparent hover:bg-accent/10'} border-accent py-2 rounded-lg text-sm font-semibold`}>{item.name}</button>
+                                    ))
+                                }
+                            </div>
+
+                            <InputError
+                                message={errors.payment_method}
+                                className="mt-2"
+                            />
+                        </div>
+
+                        <div className="mt-6">
+                            <InputLabel
+                                value="Cash"
+                            />
+
+                            <NumericFormat
+                                name="stock"
+                                value={data.cash}
+                                onValueChange={(values, sourceInfo) => setData('cash', values.floatValue)}
+                                thousandSeparator=","
+                                className="w-full border border-gray-300 rounded-lg sm:text-right"/>
+
+                            <InputError
+                                message={errors.cash}
+                                className="mt-2"
+                            />
+                        </div>
+
+                        <div className="mt-12">
+                            <PrimaryButton className="w-full justify-center py-4" disabled={processing}>Save</PrimaryButton>
+                        </div>
+                    </form>
                 </div>
             </Modal>
         </div>

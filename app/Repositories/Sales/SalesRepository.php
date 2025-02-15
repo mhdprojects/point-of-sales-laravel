@@ -7,12 +7,15 @@ use App\Models\Sales;
 use App\Models\SalesItem;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class SalesRepository implements SalesRepositoryInterface {
 
     public function all(): Collection{
         return Sales::query()
+            ->with('payment_method')
+            ->with('items.product')
             ->orderByDesc('created_at')
             ->get();
     }
@@ -23,24 +26,27 @@ class SalesRepository implements SalesRepositoryInterface {
             ->firstOrFail();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function create(array $data): ?Sales{
         try {
             DB::beginTransaction();
 
-            $data = new Sales();
-            $data->date                 = now();
-            $data->code                 = Utils::generateCode();
-            $data->customer_name        = $data['customer_name'];
-            $data->payment_method_id    = $data['payment_method_id'];
-            $data->subtotal             = $data['subtotal'];
-            $data->disc_percent         = $data['disc_percent'];
-            $data->disc_amount          = $data['disc_amount'];
-            $data->total                = $data['total'];
-            $data->save();
+            $sales = new Sales();
+            $sales->date                 = now();
+            $sales->code                 = Utils::generateCode();
+            $sales->customer_name        = $data['customer_name'];
+            $sales->payment_method_id    = $data['payment_method_id'];
+            $sales->subtotal             = $data['subtotal'];
+            $sales->disc_percent         = $data['disc_percent'];
+            $sales->disc_amount          = $data['disc_amount'];
+            $sales->total                = $data['total'];
+            $sales->save();
 
             foreach ($data['items'] as $item) {
                 $detail = new SalesItem();
-                $detail->sales_id       = $data->id;
+                $detail->sales_id       = $sales->id;
                 $detail->product_id     = $item['product_id'];
                 $detail->qty            = $item['qty'];
                 $detail->price          = $item['price'];
@@ -49,7 +55,7 @@ class SalesRepository implements SalesRepositoryInterface {
             }
 
             DB::commit();
-            return $data->fresh();
+            return $sales->fresh();
         }catch (\Exception $exception){
             DB::rollBack();
 

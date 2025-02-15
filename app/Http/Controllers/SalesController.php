@@ -47,17 +47,45 @@ class SalesController extends Controller {
         return response()->json($data);
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse{
-        $body = $request->validate([
-            'name' => ['required', 'string', 'min:3', 'max:100'],
-            'is_active' => ['required', 'boolean'],
+    public function store(Request $request){
+        $param = $request->validate([
+            'payment_method' => ['required', 'array'],
+            'subtotal' => ['required', 'numeric'],
+            'disc_percent' => ['required', 'numeric'],
+            'disc_amount' => ['required', 'numeric'],
+            'total' => ['required', 'numeric'],
+            'cash' => ['required', 'numeric'],
+            'items' => ['required', 'array'],
+            'items.*.product' => ['required', 'array'],
+            'items.*.qty' => ['required', 'numeric'],
+            'items.*.price' => ['required', 'numeric'],
+            'items.*.subtotal' => ['required', 'numeric'],
         ]);
+
+        $body['customer_name']      = '';
+        $body['payment_method_id']  = $param['payment_method']['id'];
+        $body['subtotal']           = $param['subtotal'];
+        $body['disc_percent']       = $param['disc_percent'];
+        $body['disc_amount']        = $param['disc_amount'];
+        $body['total']              = $param['total'];
+
+        $details = [];
+        foreach ($param['items'] as $item) {
+            $details[] = [
+                'product_id'    => $item['product']['id'],
+                'qty'           => $item['qty'],
+                'price'         => $item['price'],
+                'subtotal'      => $item['subtotal'],
+            ];
+        }
+
+        $body['items']  = $details;
 
         $this->service->create($body);
 
-        return Redirect::route('category.index')->with([
+        return Redirect::route('sales.add')->with([
             'type'      => 'success',
-            'message'   => 'Saved Category Successfully!',
+            'message'   => 'Saved Sales Successfully!',
         ]);
     }
 

@@ -8,6 +8,7 @@ import {BiTrash} from "react-icons/bi";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import {useEffect} from "react";
+import {formatThousands} from "@/Helper/Utils.js";
 
 export default function SalesView(props){
 
@@ -76,10 +77,16 @@ export default function SalesView(props){
                                         className="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">
-                                            Category name
+                                            Number
                                         </th>
                                         <th scope="col" className="px-6 py-3">
-                                            Status
+                                            Payment Method
+                                        </th>
+                                        <th scope="col" className="px-6 py-3">
+                                            Total
+                                        </th>
+                                        <th scope="col" className="px-6 py-3">
+                                            Items
                                         </th>
                                         <th scope="col" className="px-6 py-3 text-right">
                                             Action
@@ -99,18 +106,23 @@ export default function SalesView(props){
                                                 <tr key={index} className="bg-white border-b border-gray-200">
                                                     <th
                                                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                        {item.name}
+                                                        <p className="font-semibold uppercase">{item.code}</p>
+                                                        <p className="text-gray-400">{item.date}</p>
                                                     </th>
                                                     <th
                                                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                        {
-                                                            item.is_active ? <div className="flex items-center gap-1"><RiCheckboxBlankCircleFill className="text-green-700"/> <p className="text-green-800">Active</p></div> :
-                                                                <div className="flex items-center gap-1"><RiCheckboxBlankCircleFill className="text-red-700"/><p className="text-red-800"> Not Active</p></div>
-                                                        }
+                                                        <p className="font-semibold">{item.payment_method.name}</p>
+                                                    </th>
+                                                    <th
+                                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                                        <p className="font-semibold uppercase">{formatThousands(parseFloat(item.total))}</p>
+                                                    </th>
+                                                    <th
+                                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                                        <p className="font-semibold uppercase">{formatThousands(item.items.length)} Items</p>
                                                     </th>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center gap-1 justify-end">
-                                                            <LinkSecondary href={route('sales.edit', item.id)} data-tooltip-id="my-tooltip" data-tooltip-content="Edit Data"><RiEdit2Line/></LinkSecondary>
                                                             <PrimaryButton onClick={() => handleDelete(item.id)} type="button" data-tooltip-id="my-tooltip" data-tooltip-content="Delete Data"><BiTrash/></PrimaryButton>
                                                         </div>
                                                     </td>
