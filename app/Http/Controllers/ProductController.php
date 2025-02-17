@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Helper\ImageUpload;
-use App\Http\Helper\Utils;
+use App\Helper\Utils;
 use App\Service\CategoryService;
 use App\Service\ProductService;
 use App\Service\UnitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rules\File;
 use Inertia\Inertia;
 
 class ProductController extends Controller {

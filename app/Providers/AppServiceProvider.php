@@ -65,5 +65,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SalesService::class, function ($app) {
             return new SalesService($app->make(SalesRepositoryInterface::class));
         });
+
+//        $this->app->register('Darkaonline\L5Swagger\L5SwaggerServiceProvider');
     }
 }

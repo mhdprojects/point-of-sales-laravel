@@ -2,12 +2,11 @@
 
 namespace App\Repositories\Sales;
 
-use App\Http\Helper\Utils;
+use App\Helper\Utils;
 use App\Models\Sales;
 use App\Models\SalesItem;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 class SalesRepository implements SalesRepositoryInterface {
